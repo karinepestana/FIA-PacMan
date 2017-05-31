@@ -96,7 +96,41 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
+
+    """take the first node """
+   	firstNode = problem.getStartState() 
+   	"""create the vectors"""
+    visited = []
+    actionList = []
+
+    """create a priority queue"""
+    queue = util.PriorityQueue()
+
+ 	"""include the first node with null heuristic in the priority queue"""
+    queue.push((firstNode, actionList), nullHeuristic)
+    
+    """While the priority queue still have elements, keep doing the code below"""
+    while not queue.isEmpty():
+    	"""take from the queue the node and the action """
+     	node,actions = queue.pop()
+
+     	"""if the respective node is not in visited, then it is add"""
+     	if not node in visited:
+     		"""add the visited node in the visited vector"""
+     		visited.append(node)
+     		"""verify if the node is the goal state, if so end the code"""
+    		if problem.isGoalState(node):
+    			return actions
+
+    		"""search for nodes the haven't been visited yet, so calculate the total cost  """
+    		for coord, direction, cost in problem.getSuccessors(node):
+    			if not coord in visited:
+    				"""update the total cost"""
+    				newActions = actions + [direction]
+    				"""add the node to the queue"""
+    				queue.push((coord, newActions), problem.getCostOfActions(newActions))
+
+	return actions
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
