@@ -95,43 +95,43 @@ def breadthFirstSearch(problem):
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
+ #    """Search the node of least total cost first."""
 
-    """take the first node """
-   	firstNode = problem.getStartState() 
-   	"""create the vectors"""
-    visited = []
-    actionList = []
+ #    """take the first node
+ #    firstNode = problem.getStartState() 
+ #   	"""create the vectors"""
+ #    visited = []
+ #    actionList = []
 
-    """create a priority queue"""
-    queue = util.PriorityQueue()
+ #    """create a priority queue"""
+ #    queue = util.PriorityQueue()
 
- 	"""include the first node with null heuristic in the priority queue"""
-    queue.push((firstNode, actionList), nullHeuristic)
+ # 	"""include the first node with null heuristic in the priority queue"""
+ #    queue.push((firstNode, actionList), nullHeuristic)
     
-    """While the priority queue still have elements, keep doing the code below"""
-    while not queue.isEmpty():
-    	"""take from the queue the node and the action """
-     	node,actions = queue.pop()
+ #    """While the priority queue still have elements, keep doing the code below"""
+ #    while not queue.isEmpty():
+ #    	"""take from the queue the node and the action """
+ #     	node,actions = queue.pop()
 
-     	"""if the respective node is not in visited, then it is add"""
-     	if not node in visited:
-     		"""add the visited node in the visited vector"""
-     		visited.append(node)
-     		"""verify if the node is the goal state, if so end the code"""
-    		if problem.isGoalState(node):
-    			return actions
+ #     	"""if the respective node is not in visited, then it is add"""
+ #     	if not node in visited:
+ #     		"""add the visited node in the visited vector"""
+ #     		visited.append(node)
+ #     		"""verify if the node is the goal state, if so end the code"""
+ #    		if problem.isGoalState(node):
+ #    			return actions
 
-    		"""search for nodes the haven't been visited yet, so calculate the total cost  """
-    		for coord, direction, cost in problem.getSuccessors(node):
-    			if not coord in visited:
-    				"""update the total cost"""
-    				newActions = actions + [direction]
-    				"""add the node to the queue"""
-    				queue.push((coord, newActions), problem.getCostOfActions(newActions))
+ #    		"""search for nodes the haven't been visited yet, so calculate the total cost  """
+ #    		for coord, direction, cost in problem.getSuccessors(node):
+ #    			if not coord in visited:
+ #    				"""update the total cost"""
+ #    				newActions = actions + [direction]
+ #    				"""add the node to the queue"""
+ #    				queue.push((coord, newActions), problem.getCostOfActions(newActions))
 
-	return actions
-    util.raiseNotDefined()
+	# return actions
+     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -142,8 +142,9 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    visited=[]
-    unvisited=[]
+    close_list=[]
+    open_list=[]
+    steps=[]
 
     queue=util.PriorityQueue()
 
@@ -151,19 +152,69 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     queue.push((firstNode, []), heuristic(firstNode, problem))
 
-    while not queue:
+    while not queue.isEmpty():
 
-        node, edges = queue.pop()
+        node, steps = queue.pop()
+       
+        close_list.append(node)
 
         if problem.isGoalState(node):
-            return edges
+            print steps
+            return steps
 
-        visited.append(firstNode)
+        open_list=problem.getSuccessors(node)
+      
+        for neighbors in open_list:
+            if neighbors not in close_list:
+                neighborSteps = steps + [neighbors[1]]
+                cost = problem.getCostOfActions(neighborSteps) + heuristic(neighbors[0], problem)
+                queue.push((neighbors[0], neighborSteps), cost)
 
+    print steps
+    return steps
 
+def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
+    alpha = 1.2
+    t = 1.0
+    queue=util.queue()
+    steps=[]
+    state = problem.getStartState()
+    action = []
 
+    while True:
+        queue=[]
+        i=0
+        neighbors = problem.getSuccessors(node)
+        for nextStates in neighbors:
+            fila.push(nextStates, [nextStates[1]])
+            i = i+ 1
 
-    util.raiseNotDefined()
+        randomPoint= random.ranint(0, i-1)
+
+        if randomPoint > 0:
+            for successor in range (0, randomPoint + 1):
+                newState, newaction = fila.pop()
+        else:
+            newState, newaction = fila.pop()
+
+        e= problem.getCostOfActions(action) - problem.getCostOfActions(actionNode)
+
+        if e < 0:
+            state= newState
+            action= newaction
+            steps = steps + action
+        else:
+            if math.exp(-e/t):
+                state= newState
+                action= newaction
+                steps = steps + action
+
+        if problem.isGoalState(state):
+            return steps
+
+        t=t * alpha
+
+    return steps
 
 
 # Abbreviations
@@ -171,3 +222,4 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+sa= simulatedAnnelingSearch
