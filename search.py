@@ -223,7 +223,7 @@ def HillClimbingSearch(problem, heuristic=nullHeuristic):
         nextState = fila.pop()
 
         nextCost=problem.getCostOfActions(action_cost) + heuristic(nextState[0], problem) - 1
-
+    
         if cost > nextCost:
             steps = steps + [nextState[1]]
             state = ((nextState[0], nextState[1]), nextCost)
@@ -238,3 +238,4 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 sa= simulatedAnnelingSearch
+hl= HillClimbingSearch
