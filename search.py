@@ -95,8 +95,10 @@ def breadthFirstSearch(problem):
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
-    firstNode = problem.getStartState() 
-   
+    firstNode = problem.getStartState()
+    print "estados testados " + firstNode
+
+
     visited = []
     actionList = []
     queue = util.PriorityQueue()
@@ -108,15 +110,19 @@ def uniformCostSearch(problem):
         if not node in visited:
             visited.append(node)
             if problem.isGoalState(node):
+                print "solucao " + steps
                 return steps
 
                 successors = problem.getSuccessors(node)
+                print "estados testados " + successors
+
                 for neighbor in successors:
                     if not neighbor[0] in visited:
                         newSteps = steps + [neighbor[1]]
 
                         queue.push((neighbor[0], newSteps), problem.getCostOfActions(newSteps))
 
+    print "solucao " + steps
 	return steps
 
 def nullHeuristic(state, problem=None):
@@ -135,6 +141,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     queue=util.PriorityQueue()
 
     firstNode = problem.getStartState()
+    print "estados testados " + firstNode
 
     queue.push((firstNode, []), heuristic(firstNode, problem))
 
@@ -145,18 +152,19 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         close_list.append(node)
 
         if problem.isGoalState(node):
-            print steps
+            print "solucao " + steps
             return steps
 
         open_list=problem.getSuccessors(node)
-      
+        print "estados testados " + open_list
+
         for neighbors in open_list:
             if neighbors not in close_list:
                 neighborSteps = steps + [neighbors[1]]
                 cost = problem.getCostOfActions(neighborSteps) + heuristic(neighbors[0], problem)
                 queue.push((neighbors[0], neighborSteps), cost)
 
-    print steps
+    print "solucao " + steps
     return steps
 
 def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
@@ -165,12 +173,15 @@ def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
     queue=util.queue()
     steps=[]
     state = problem.getStartState()
+    print "estados testados " + state
     action = []
 
     while True:
         queue=[]
         i=0
         neighbors = problem.getSuccessors(node)
+        print "estados testados " + successors
+
         for nextStates in neighbors:
             fila.push(nextStates, [nextStates[1]])
             i = i+ 1
@@ -196,25 +207,34 @@ def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
                 steps = steps + action
 
         if problem.isGoalState(state):
+            print "solucao " + steps
             return steps
 
         t=t * alpha
 
+    print "solucao " + steps
     return steps
 
 
 def HillClimbingSearch(problem, heuristic=nullHeuristic):
 
     state=problem.getStartState()
+    print "estados testados " + state
+
     nextCost= 0
     cost = 1
     queue = util.PriorityQueue()
     steps=[]
 
     while cost > nextCost:
+        if problem.isGoalState(state):
+           print "solucao " + steps
+            return steps
+
         cost = heuristic(state, problem)
 
         successors= problem.getSuccessors(state)
+        print "estados testados " + successors
 
         for neighbor in successors:
             action_cost = problem.getCostOfActions(neighbor[1]) + heuristic(neighbor[0], problem)
@@ -228,6 +248,7 @@ def HillClimbingSearch(problem, heuristic=nullHeuristic):
             steps = steps + [nextState[1]]
             state = ((nextState[0], nextState[1]), nextCost)
 
+    print "solucao " + steps
     return steps
 
 
