@@ -18,6 +18,8 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import random
+import math
 
 class SearchProblem:
     """
@@ -95,34 +97,44 @@ def breadthFirstSearch(problem):
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
+#    """Search the node of least total cost first."""
+
+#    """take the first node
     firstNode = problem.getStartState()
-    print "estados testados " + firstNode
 
-
+#   	"""create the vectors"""
     visited = []
-    actionList = []
+ #    """create a priority queue"""
     queue = util.PriorityQueue()
-    queue.push((firstNode, actionList), nullHeuristic)
+
+# 	"""include the first node with null heuristic in the priority queue"""
+    queue.push((firstNode, []), nullHeuristic)
     
+ #    """While the priority queue still have elements, keep doing the code below"""
     while not queue.isEmpty():
+
+ #    	"""take from the queue the node and the action """
         node, steps = queue.pop()
 
-        if not node in visited:
+        if node not in visited:
+ #     	"""if the respective node is not in visited, then it is add"""
             visited.append(node)
+ #     		"""verify if the node is the goal state, if so end the code"""
             if problem.isGoalState(node):
-                print "solucao " + steps
+                print "solucao ", steps, "numero de estados ", len(steps) 
                 return steps
 
-                successors = problem.getSuccessors(node)
-                print "estados testados " + successors
+            successors = problem.getSuccessors(node)
+               
+ #    		"""search for nodes the haven't been visited yet, so calculate the total cost  """
+            for neighbor in successors:
+                if not neighbor[0] in visited:
+#			"""update the total cost"""
+                    newSteps = steps + [neighbor[1]]
+#    				"""add the node to the queue"""
+                    queue.push((neighbor[0], newSteps), problem.getCostOfActions(newSteps))
 
-                for neighbor in successors:
-                    if not neighbor[0] in visited:
-                        newSteps = steps + [neighbor[1]]
-
-                        queue.push((neighbor[0], newSteps), problem.getCostOfActions(newSteps))
-
-    print "solucao " + steps
+    print "solucao ", steps, "numero de estados ", len(steps) 
     return steps
 
 def nullHeuristic(state, problem=None):
@@ -141,7 +153,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     queue=util.PriorityQueue()
 
     firstNode = problem.getStartState()
-    print "estados testados " + firstNode
 
     queue.push((firstNode, []), heuristic(firstNode, problem))
 
@@ -152,11 +163,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         close_list.append(node)
 
         if problem.isGoalState(node):
-            print "solucao " + steps
+            print "solucao ",  steps, "numero de estados ", len(steps)
             return steps
 
         open_list=problem.getSuccessors(node)
-        print "estados testados " + open_list
 
         for neighbors in open_list:
             if neighbors not in close_list:
@@ -164,37 +174,38 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 cost = problem.getCostOfActions(neighborSteps) + heuristic(neighbors[0], problem)
                 queue.push((neighbors[0], neighborSteps), cost)
 
-    print "solucao " + steps
+    print "solucao ", steps
     return steps
 
 def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
     alpha = 1.2
     t = 1.0
-    queue=util.queue()
+    queue=util.Queue()
     steps=[]
     state = problem.getStartState()
-    print "estados testados " + state
+    
     action = []
 
     while True:
-        queue=[]
+        queue=util.Queue()
         i=0
-        neighbors = problem.getSuccessors(node)
-        print "estados testados " + successors
+        neighbors = problem.getSuccessors(state)
+        
 
         for nextStates in neighbors:
-            fila.push(nextStates, [nextStates[1]])
+            auxDirection=[nextStates[1]]
+            queue.push((nextStates[0], auxDirection))
             i = i+ 1
 
-        randomPoint= random.ranint(0, i-1)
+        randomPoint= random.randint(0, i-1)
 
         if randomPoint > 0:
             for successor in range (0, randomPoint + 1):
-                newState, newaction = fila.pop()
+                newState, newaction = queue.pop()
         else:
-            newState, newaction = fila.pop()
+            newState, newaction = queue.pop()
 
-        e= problem.getCostOfActions(action) - problem.getCostOfActions(actionNode)
+        e= problem.getCostOfActions(action) - problem.getCostOfActions(newaction)
 
         if e < 0:
             state= newState
@@ -207,50 +218,49 @@ def simulatedAnnelingSearch(problem, heuristic=nullHeuristic):
                 steps = steps + action
 
         if problem.isGoalState(state):
-            print "solucao " + steps
+            print "solucao ", steps, "numero de estados " , len(steps)
             return steps
 
         t=t * alpha
 
-    print "solucao " + steps
+    print "solucao ", steps, "numero de estados ", len(steps)
     return steps
 
 
 def HillClimbingSearch(problem, heuristic=nullHeuristic):
 
     state=problem.getStartState()
-    print "estados testados " + state
 
     nextCost= 0
     cost = 1
     queue = util.PriorityQueue()
     steps=[]
 
+    state= ((state, []), heuristic(state, problem))
+
     while cost > nextCost:
+        queue = util.PriorityQueue()
+        
         if problem.isGoalState(state):
-           print "solucao " + steps           
+           print "solucao ", steps, "numero de estados ", len(steps)           
            return steps
 
         cost = heuristic(state, problem)
 
-        successors= problem.getSuccessors(state)
-        print "estados testados " + successors
+        successors= problem.getSuccessors(state[0][0])
 
         for neighbor in successors:
-            action_cost = problem.getCostOfActions(neighbor[1]) + heuristic(neighbor[0], problem)
-            fila.push((neighbor[0], neighbor[1]), action_cost)
+            action_cost = problem.getCostOfActions([neighbor[1]]) + heuristic(neighbor[0], problem)
+            queue.push((neighbor[0], neighbor[1]), action_cost)
 
-        nextState = fila.pop()
+        nextState = queue.pop()
 
-        nextCost=problem.getCostOfActions(action_cost) + heuristic(nextState[0], problem) - 1
+        nextCost = problem.getCostOfActions([nextState[1]]) + heuristic(nextState[0], problem) - 1
     
-        if cost > nextCost:
-            steps = steps + [nextState[1]]
-            state = ((nextState[0], nextState[1]), nextCost)
-
-    print "solucao " + steps
+    steps = steps + [nextState[1]]
+    state = ((nextState[0], nextState[1]), nextCost)
+    print "solucao ", steps, "numero de estados ", len(steps) 
     return steps
-
 
 
 # Abbreviations
@@ -259,4 +269,4 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 sa= simulatedAnnelingSearch
-hl= HillClimbingSearch
+hc= HillClimbingSearch
