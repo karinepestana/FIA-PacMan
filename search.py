@@ -123,7 +123,7 @@ def uniformCostSearch(problem):
                         queue.push((neighbor[0], newSteps), problem.getCostOfActions(newSteps))
 
     print "solucao " + steps
-	return steps
+    return steps
 
 def nullHeuristic(state, problem=None):
     """
@@ -228,8 +228,8 @@ def HillClimbingSearch(problem, heuristic=nullHeuristic):
 
     while cost > nextCost:
         if problem.isGoalState(state):
-           print "solucao " + steps
-            return steps
+           print "solucao " + steps           
+           return steps
 
         cost = heuristic(state, problem)
 
