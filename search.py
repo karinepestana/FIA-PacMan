@@ -146,30 +146,31 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    close_list=[]
+    visited=[]
     open_list=[]
     steps=[]
-
+    """Create the a priority queue"""
     queue=util.PriorityQueue()
-
+    """Get the inicial state of the first node"""
     firstNode = problem.getStartState()
-
+    """Initialize the queue with the first node"""
     queue.push((firstNode, []), heuristic(firstNode, problem))
-
+    """While still have elements in the queue, keep dooing th code below"""
     while not queue.isEmpty():
-
+        """Take the element from the queue"""
         node, steps = queue.pop()
-       
-        close_list.append(node)
-
+        """Verify if the node is the goal state"""
         if problem.isGoalState(node):
             print "solucao ",  steps, "numero de estados ", len(steps)
             return steps
 
+        """Add the node to the visited list"""
+        visited.append(node)
+
         open_list=problem.getSuccessors(node)
 
         for neighbors in open_list:
-            if neighbors not in close_list:
+            if neighbors[0] not in visited:
                 neighborSteps = steps + [neighbors[1]]
                 cost = problem.getCostOfActions(neighborSteps) + heuristic(neighbors[0], problem)
                 queue.push((neighbors[0], neighborSteps), cost)
